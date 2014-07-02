@@ -12,7 +12,7 @@ After you have downloaded this project or [the Überjar](./build/ardoq-excel-imp
 ##Configuration
 
 The default.properties file shows how to configure it:
-```
+```=properties
 #The authentication token to use (Generate a new one via your profile - Click on your name in Ardoq, Profile and Prefs -> API and Tokens)
 #ardoqToken=
 
@@ -25,7 +25,7 @@ workspaceName=Excel import
 modelName=Application service
 
 #The organization name if you have an Enterprise account
-organization=mw
+#organization=mw
 
 #Deletes components and references not found in spreadsheet if set to YES
 deleteMissing=YES
