@@ -12,7 +12,7 @@ After you have downloaded this project or [the Überjar](./build/ardoq-excel-imp
 ##Configuration
 
 The default.properties file shows how to configure it:
-```=properties
+```=ini
 #The authentication token to use (Generate a new one via your profile - Click on your name in Ardoq, Profile and Prefs -> API and Tokens)
 #ardoqToken=
 
@@ -43,7 +43,7 @@ compMapping_Application=Service
 #The name of the column that has the descriptions
 compDescriptionColumn=General description
 
-#The name of the columns you wish to map to a field in the model. You can have as column/field mappings as you want.
+#The name of the columns you wish to map to a field in the model. You can have as many column/field mappings as you want.
 #Please escape whitespace, colon and equal characters with \ (backslash)
 
 fieldColMapping_TAM\ Mapping=tam_mapping
