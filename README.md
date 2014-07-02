@@ -1,9 +1,12 @@
 This utility imports pages and references from one or two Excel.xlsx files into Ardoq.
 
-See [data.xslx](./src/main/resources/data.xlsx) for an example format Excel format we can use for importing.
+See [data.xslx](./src/main/resources/data.xlsx) for an example Excel format we can use for importing.
 
 ##Execution
 You must configure your authentication token and set the environment variable ```ardoqToken``` in your environment, or specify it in the properties file.
+
+After you have downloaded this project or [the Überjar](./build/ardoq-excel-import-0.5.1.jar) you can execute it with the following command:
+
 ```java -Dfile.encoding=UTF-8 -classpath "build/ardoq-excel-import-0.5.1.jar" com.ardoq.ExcelImport ./default.properties```
 
 ##Configuration
