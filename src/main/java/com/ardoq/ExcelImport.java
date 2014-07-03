@@ -170,6 +170,8 @@ public class ExcelImport {
         for (ExcelComponent ec : ExcelComponent.getRootNodes())
         {
             ec.setMyComponent(ardoqSync.addComponent(ec.getMyComponent()));
+            //Update cache.
+            cachedMap.put(ec.getPath(), ec.getMyComponent());
             storeRecursive(ec);
         }
 
@@ -252,6 +254,8 @@ public class ExcelImport {
        {
            child.getMyComponent().setParent(ec.getMyComponent().getId());
            child.setMyComponent(ardoqSync.addComponent(child.getMyComponent()));
+           //Update cache.
+           cachedMap.put(child.getPath(), child.getMyComponent());
            storeRecursive(child);
        }
     }

@@ -6,7 +6,7 @@
 
     <artifactId>ardoq-excel-import</artifactId>
     <groupId>com.ardoq.tools</groupId>
-    <version>0.5.1</version>
+    <version>0.5.2</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -31,7 +31,7 @@
         <dependency>
             <groupId>com.ardoq.api</groupId>
             <artifactId>client</artifactId>
-            <version>0.8.3</version>
+            <version>0.8.4</version>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
