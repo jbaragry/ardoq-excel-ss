@@ -136,8 +136,8 @@ public class ExcelImport {
            ExcelComponent currentComp = null;
            String parentPath = null;
            for (int i = 0; i < componentCellRange+1; i++){
-               if (compTypeMap.containsKey(i) && row.getCell(i) != null && row.getCell(i).getStringCellValue().trim().length()> 1){
-                   String name = row.getCell(i).getStringCellValue().trim();
+               if (compTypeMap.containsKey(i) && row.getCell(i) != null && row.getCell(i).getRawValue().trim().length()> 1){
+                   String name = (row.getCell(i).getCellType() != Cell.CELL_TYPE_STRING ) ? row.getCell(i).getRawValue().trim() : row.getCell(i).getStringCellValue();
                    parentPath = (parentPath == null) ? name : parentPath+"."+name;
                    Component c = getComponent(parentPath, name, compTypeMap.get(i));
                    currentComp = new ExcelComponent(parentPath, c, currentComp);
@@ -145,7 +145,7 @@ public class ExcelImport {
            }
            if (currentComp != null) {
                System.out.println("Found component: "+currentComp.getMyComponent().getName());
-               currentComp.getMyComponent().setDescription((row.getCell(descriptionIndex) != null) ? row.getCell(descriptionIndex).getStringCellValue() : "");
+               currentComp.getMyComponent().setDescription((descriptionIndex != -1 && row.getCell(descriptionIndex) != null) ? row.getCell(descriptionIndex).getRawValue() : "");
                HashMap<String, Object> fields = new HashMap<String, Object>();
                for (Integer column : fieldTypeMap.keySet()){
                    Cell fieldValue = row.getCell(column);
