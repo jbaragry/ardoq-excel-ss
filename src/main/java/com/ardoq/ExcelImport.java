@@ -145,7 +145,7 @@ public class ExcelImport {
            }
            if (currentComp != null) {
                System.out.println("Found component: "+currentComp.getMyComponent().getName());
-               currentComp.getMyComponent().setDescription((descriptionIndex != -1 && row.getCell(descriptionIndex) != null) ? row.getCell(descriptionIndex).getRawValue() : "");
+               currentComp.getMyComponent().setDescription((descriptionIndex != -1 && row.getCell(descriptionIndex) != null) ? row.getCell(descriptionIndex).getStringCellValue() : "");
                HashMap<String, Object> fields = new HashMap<String, Object>();
                for (Integer column : fieldTypeMap.keySet()){
                    Cell fieldValue = row.getCell(column);
