@@ -192,30 +192,32 @@ public class ExcelImport {
 
         while(referencesRow != null)
         {
-            String sourcePath =getStringValueFromCell(referencesRow, referenceSourceColumn).replace(componentSeparator, ".");
-            Component sourceComp = cachedMap.get(sourcePath);
-            if (null != sourceComp)
-            {
-                List<Component> targetComponents = getTargetComponents(referencesRow);
-                Map<String, Integer> refTypes = ardoqSync.getModel().getReferenceTypes();
-                Integer linkType =  refTypes.get(getStringValueFromCell(referencesRow, referenceLinkTypeColumn));
-                if (linkType == null)
-                {
-                    linkType = refTypes.get(referenceDefaultLinkType);
-                }
-                if (linkType == null){
-                    linkType = (Integer) refTypes.values().toArray()[0];
-                }
+            String sourcePath =getStringValueFromCell(referencesRow, referenceSourceColumn);
+            if (sourcePath != null) {
+                sourcePath = sourcePath.replace(componentSeparator, ".");
+                Component sourceComp = cachedMap.get(sourcePath);
+                if (null != sourceComp) {
+                    List<Component> targetComponents = getTargetComponents(referencesRow);
+                    Map<String, Integer> refTypes = ardoqSync.getModel().getReferenceTypes();
+                    Integer linkType = refTypes.get(getStringValueFromCell(referencesRow, referenceLinkTypeColumn));
+                    if (linkType == null) {
+                        linkType = refTypes.get(referenceDefaultLinkType);
+                    }
+                    if (linkType == null) {
+                        linkType = (Integer) refTypes.values().toArray()[0];
+                    }
 
-                for (Component target : targetComponents)
-                {
-                    ardoqSync.addReference(new Reference(ardoqSync.getWorkspace().getId(), "", sourceComp.getId(), target.getId(), linkType));
-                }
+                    for (Component target : targetComponents) {
+                        ardoqSync.addReference(new Reference(ardoqSync.getWorkspace().getId(), "", sourceComp.getId(), target.getId(), linkType));
+                    }
 
+                } else {
+                    System.err.println("Couldn't find source component: " + sourcePath);
+                }
             }
             else
             {
-                System.err.println("Couldn't find source component: "+sourcePath);
+                System.err.println("Could not find source component in row: "+(rowIndex+1));
             }
             referencesRow = referenceSheet.getRow(++rowIndex);
         }
