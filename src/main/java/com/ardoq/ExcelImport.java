@@ -19,24 +19,28 @@ public class ExcelImport {
     private static String host;
 
     private final static Properties config = new Properties();
-    private static HashMap<String, String> columnMapping = new HashMap<String, String>();
     private static String modelName;
     private static String workspaceName;
+    private static String sourceRefWorkspaceName;
+    private static String sourceRefModelName;
     private static String componentSheet;
     private static String componentFile;
     private static String referenceFile;
     private static HashMap<String, String> compMapping = new HashMap<String, String>();
+    private static HashMap<String, String> columnMapping = new HashMap<String, String>();
 
 
     private static String descriptionColumn;
     private static ArdoqClient client;
     private static SyncUtil ardoqSync;
+    private static SyncUtil ardoqRefSync;
     private static String organization;
     private static String referenceSheet;
     private static String referenceDefaultLinkType;
     private static int referenceLinkTypeColumn;
     private static int referenceStartFromRow;
     private static int referenceSourceColumn;
+    private static int referenceTargetColumn;
     private static int referenceStartFromColumn;
 
     static HashMap<String, Component> cachedMap = new HashMap<String, Component>();
@@ -45,6 +49,7 @@ public class ExcelImport {
         if (args.length > 0) {
             String configFile = args[0];
             System.out.println("Loading config: " + configFile);
+            //noinspection Since15
             config.load(new FileReader(configFile));
             parseConfig();
             initClient();
@@ -104,8 +109,7 @@ public class ExcelImport {
                 componentCellRange = (cell.getColumnIndex() > componentCellRange) ? cell.getColumnIndex() : componentCellRange;
                 compMapping.remove(heading);
             }
-            if (columnMapping.containsKey(heading))
-            {
+            if (columnMapping.containsKey(heading)) {
                 found = true;
                 System.out.println("Found field heading: "+heading+" , "+cell.getColumnIndex());
                 fieldTypeMap.put(cell.getColumnIndex(),columnMapping.get(heading));
@@ -179,6 +183,7 @@ public class ExcelImport {
 
     }
 
+    /*
     private static void syncReferences() throws IOException {
 
         System.out.println("Loading Excel file: "+referenceFile);
@@ -222,6 +227,54 @@ public class ExcelImport {
                 System.err.println("Could not find source component in row: "+(rowIndex+1));
             }
             referencesRow = referenceSheet.getRow(++rowIndex);
+        }
+    }
+    */
+    private static void syncReferences() throws IOException {
+
+        System.out.println("Loading Excel file: "+componentFile);
+        XSSFWorkbook workbook = new XSSFWorkbook(new FileInputStream(componentFile));
+
+        System.out.println("Detectings reference spread sheet: "+componentFile);
+        // Import refs
+        XSSFSheet compSheet = workbook.getSheet(ExcelImport.componentSheet);
+        System.out.println("Analyzing sheet for references");
+
+        int rowIndex = 1;
+        XSSFRow row = compSheet.getRow(rowIndex);
+
+        Map<String, Integer> refTypes = ardoqRefSync.getModel().getReferenceTypes();
+        Integer linkType = refTypes.get("deployedTo");
+        if (linkType == null) {
+            System.out.println("could not find linktype: " + "deployedTo");
+        }
+
+        while (row != null)
+        {
+            /*
+                find source comp
+                find target comp
+                create reference with correct type
+                add to model
+             */
+            String targetPath =getStringValueFromCell(row, referenceTargetColumn);
+            Component targetComp = ardoqSync.getComponentByPath(targetPath);
+            String sourcePath = getStringValueFromCell(row, referenceSourceColumn);
+            Component sourceComp = ardoqRefSync.getComponentByPath(sourcePath);
+            if (targetComp == null) {
+                System.out.println("Could not find target component for string: " + targetPath);
+            }
+            if (sourceComp == null) {
+                System.out.println("Could not find source component for string: " + sourcePath);
+            }
+            if ((sourceComp != null) && (targetComp != null)) {
+                Reference reference = new Reference(ardoqRefSync.getWorkspace().getId(), "", sourceComp.getId(), targetComp.getId(), linkType);
+                reference.setRootWorkspace(sourceComp.getRootWorkspace());
+                reference.setTargetWorkspace(targetComp.getRootWorkspace());
+                ardoqRefSync.addReference(reference);
+            }
+
+            row = compSheet.getRow(++rowIndex);
         }
     }
 
@@ -288,6 +341,7 @@ public class ExcelImport {
         client = new ArdoqClient(host, token);
         client.setOrganization(organization);
         ardoqSync = new SyncUtil(client, workspaceName, modelName);
+        ardoqRefSync = new SyncUtil(client, sourceRefWorkspaceName, sourceRefModelName);
     }
 
     private static void parseConfig() {
@@ -316,7 +370,11 @@ public class ExcelImport {
         referenceLinkTypeColumn = getNumberConfig("referenceLinkTypeColumn");
         referenceStartFromRow = getNumberConfig("referenceStartFromRow");
         referenceSourceColumn = getNumberConfig("referenceSourceColumn");
+        referenceTargetColumn = getNumberConfig("referenceTargetColumn");
         referenceStartFromColumn = getNumberConfig("referenceStartFromColumn");
+        sourceRefWorkspaceName = getRequiredValue("sourceRefWorkspaceName");
+        sourceRefModelName = getRequiredValue("sourceRefModelName");
+
 
 
         for (Object o : config.keySet()){
