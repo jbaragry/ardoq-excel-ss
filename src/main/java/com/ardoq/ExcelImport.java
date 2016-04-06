@@ -244,6 +244,7 @@ public class ExcelImport {
         XSSFRow row = compSheet.getRow(rowIndex);
 
         Map<String, Integer> refTypes = ardoqRefSync.getModel().getReferenceTypes();
+        // TODO: get linkType from the properties file instead
         Integer linkType = refTypes.get("deployedTo");
         if (linkType == null) {
             System.out.println("could not find linktype: " + "deployedTo");
